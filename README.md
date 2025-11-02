@@ -1,25 +1,47 @@
 # BÀI 1 : FreeRTOS điều khiển LED dùng Event Groups – STM32F103
-📌 Giới thiệu
+# FreeRTOS EventGroup LED Control – STM32F103
 
-1,FreeRTOS + EventGroup để điều khiển 3 task nháy LED thông qua 1 nút nhấn.
-Mỗi lần nhấn nút sẽ chuyển chế độ hoạt động của các task:
-Mode	Task hoạt động	Mô tả
-0	Không task nào	Tắt hết LED
-1	Task1	Nháy LED PA1 nhanh
-2	Task2	Nháy LED PA2 vừa
-3	Task3	Nháy LED PA3 chậm
-4	Task1 + Task2 + Task3	Cả 3 LED cùng nháy
-Toàn bộ task đồng bộ với nhau bằng EventGroup của FreeRTOS.
-Cấu hình phần cứng
-MCU: STM32F103C8T6 (Blue Pill)
-LED output:
-PA1 → LED 1
-PA2 → LED 2
-PA3 → LED 3
-Nút nhấn: PA0 (Input Pull-Up)
-Ý tưởng hoạt động:
-Có 1 task chính Task_Control đọc nút bấm, chuyển mode = 0 → 4.
-Dựa vào mode, Task_Control sẽ Set/Clear bit trong EventGroup.
-Các task LED chỉ chạy khi bit của chúng được Set.
-Khi bit bị Clear, task vẫn tồn tại nhưng bị block trong xEventGroupWaitBits().
-#BÀI 2 
+## 📌 Giới thiệu
+Dự án sử dụng FreeRTOS và EventGroup để điều khiển 3 LED thông qua 1 nút nhấn.  
+Mỗi lần nhấn nút, chế độ sẽ thay đổi và các task LED sẽ nháy theo tần số khác nhau.
+
+### Bảng chế độ hoạt động
+| Mode | Task chạy | LED | Tần số |
+|------|-----------|-----|--------|
+| 0 | Không task nào | Tắt hết | — |
+| 1 | Task1 | PA1 | Nhanh |
+| 2 | Task2 | PA2 | Vừa |
+| 3 | Task3 | PA3 | Chậm |
+| 4 | Task1 + Task2 + Task3 | PA1 + PA2 + PA3 | Cùng nháy |
+
+---
+
+## ⚙️ Phần cứng
+- STM32F103C8T6
+- PA1 → LED1  
+- PA2 → LED2  
+- PA3 → LED3  
+- PA0 → Nút nhấn (kéo lên nội – Input Pull-Up)
+
+Kết nối:
+```
+PA0 ---- Nút nhấn ---- GND
+PA1 ---- LED1 + R
+PA2 ---- LED2 + R
+PA3 ---- LED3 + R
+```
+
+---
+
+## 🧠 Nguyên lý hoạt động
+- Task_Control đọc nút nhấn và thay đổi biến `mode`.
+- Dựa vào mode, Task_Control **Set/Clear bit** trong EventGroup.
+- Các task LED sẽ chờ bit tương ứng:
+  - BIT_TASK1 → Task1  
+  - BIT_TASK2 → Task2  
+  - BIT_TASK3 → Task3  
+- Khi bit được set → Task LED chạy  
+- Khi bit clear → Task LED bị block và dừng nháy
+
+---
+
