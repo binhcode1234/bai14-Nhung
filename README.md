@@ -1,7 +1,7 @@
 # BÀI 1 : FreeRTOS điều khiển LED dùng Event Groups – STM32F103
 📌 Giới thiệu
 
-FreeRTOS + EventGroup để điều khiển 3 task nháy LED thông qua 1 nút nhấn.
+1,FreeRTOS + EventGroup để điều khiển 3 task nháy LED thông qua 1 nút nhấn.
 Mỗi lần nhấn nút sẽ chuyển chế độ hoạt động của các task:
 Mode	Task hoạt động	Mô tả
 0	Không task nào	Tắt hết LED
